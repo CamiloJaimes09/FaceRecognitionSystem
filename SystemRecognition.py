@@ -19,8 +19,27 @@ def LogBiometric():
         #Reslize
         frame = imutils.resize(frame, width=1280)
 
+        #RGB
+
+        frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+
         #Mostrar frame
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+
+        if ret == True:
+            #Inferencia de la malla facial
+            res = FaceMesh.process(frameRGB)
+
+            #Result list
+            px=[]
+            py=[]
+            lista_coordenadas = []
+            if res.multi_face_landmarks:
+                #Extraer las detecciones
+                for rostros in res.multi_face_landmarks:
+                    mpDraw.draw_landmarks(frame, rostros, FacemeshObject.FACEMESH_CONTOURS, configdraw, configdraw )
+
         
         #Convertir el video
         im = Image.fromarray(frame)
@@ -119,6 +138,31 @@ parpadeo = False
 conteo = 0
 muestra = 0
 step = 0
+
+#Offset
+
+offsety = 30
+offsetx = 30
+
+#Treshold
+
+confThreshold = 0.5
+
+#Tooldraw
+
+mpDraw = mp.solutions.drawing_utils
+configdraw = mpDraw.DrawingSpec(thickness =1, circle_radius=1)
+
+#Object Face Mash
+
+FacemeshObject = mp.solutions.face_mesh
+FaceMesh = FacemeshObject.FaceMesh(max_num_faces=1)
+
+#Object Face Detect
+
+FaceObject = mp.solutions.face_detection
+detector = FaceObject.FaceDetection(min_detection_confidence=0.5, model_selection=1)
+
 
 #Lista de informacion
 info = []
